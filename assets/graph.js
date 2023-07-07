@@ -80,6 +80,42 @@ function link_graph(graph) {
     }
 }
 
+// Extract data from a graph
+function extract_graph_data(graph) {
+    let nodeDataArray = [];
+    let linkDataArray = [];
+
+    let i = 1
+    // Look into each level of the graph
+    graph.forEach((level) => {
+        let l = level.length;   // # of nodes inside the level
+        let b = i;              // base index for the level
+
+        level.forEach((node) => {
+            // Associate to each node a key based on the visiting order
+            nodeDataArray.push({
+                key: i,
+                text: i.toString()
+            });
+            node[1].forEach((move) => {
+                /*
+                    Associate to each link the key of the current node and
+                    the key of the node specified inside the move array.
+                    This node is on the next level and is not yet added to
+                    the array of nodes.
+                 */
+                linkDataArray.push({
+                    from: i,
+                    to: b + l + move[0],
+                    text: move[1]
+                })
+            })
+            i++;
+        })
+    })
+    return [nodeDataArray, linkDataArray];
+}
+
 // Returns a layered graph
 function get_graph(puzzle, sols) {
     // Generate solution sequences
@@ -90,7 +126,14 @@ function get_graph(puzzle, sols) {
 
     // Initiate layered graph
     let graph = initiate_graph(sequences)
-    // Link node in each layer
+    // Link nodes in each layer
     link_graph(graph)
+
     return graph;
+}
+
+function get_graph_data(puzzle, sols) {
+    return extract_graph_data(
+        get_graph(puzzle, sols)
+    );
 }
