@@ -37,21 +37,20 @@ function generateDigraph(i) {
     generateData(i);
     layout();
     myDiagram.commitTransaction("generateDigraph");
-
 }
 
 // Set nodes and links for the diagram
 function generateData(i) {
-    let data = get_graph_data(dataset[i][0], dataset[i][1]);
-    myDiagram.model.nodeDataArray = data[0];
-    myDiagram.model.linkDataArray = data[1];
+    let data = get_graph_data(dataset[i]);
+    myDiagram.model.nodeDataArray = data.nodes;
+    myDiagram.model.linkDataArray = data.links;
 }
 
 // TODO: Adjust parameters
 function layout() {
     myDiagram.startTransaction("change Layout");
     var lay = myDiagram.layout;
-    lay.direction = 90
+    lay.direction = 90;
     lay.layerSpacing = 25;
     lay.columnSpacing = 25;
     lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;

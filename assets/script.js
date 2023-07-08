@@ -26,8 +26,6 @@ function initiateNavbar() {
 			event.preventDefault();
 			generateDigraph(i);
 		});
-
-		buttonContainer.appendChild(button);
 	}
 }
 
@@ -38,7 +36,7 @@ const dataset = []
 loadData()
 	.then((data) => {
 		data.forEach((d) => {
-			dataset.push(d)
+			dataset.push({puzzle: d[0], move_seq: d[1]})
 		});
 		initiateNavbar();
 		generateDigraph(0);

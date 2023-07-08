@@ -5,28 +5,32 @@
     puzzles.
  */
 function initiate_graph(sequences) {
-    let graph = []
-    for(let i = 0; i < sequences[0].length; i++)
-        graph.push([])
+    let graph = [];
+    let sol_len = sequences[0].length;
+    for(let i = 0; i < sol_len; i++)
+        graph.push([]);
     // Populate graph
     sequences.forEach((seq) => {
         // Check if a configuration is already in the layer
         function check_graph_level(g_level, seq_elem) {
             for(let i = 0; i < g_level.length; i++) {
-                if (equals(g_level[i][0],seq_elem[0])) {
+                if (equals(g_level[i].puzzle ,seq_elem.puzzle)) {
                     // If true, add the following move if it hasn't already
-                    if (!g_level[i][1].includes(seq_elem[1]))
-                        g_level[i][1].push(seq_elem[1])
+                    if (!g_level[i].moves.includes(seq_elem.move))
+                        g_level[i].moves.push(seq_elem.move)
                     return false;
                 }
             }
             return true;
         }
-        // For each puzzle in the sequence, checks if, on the corresponding
+        // For each puzzle in the sequence, check if, on the corresponding
         // layer, the puzzle is present
-        for (let j = 0; j < sequences[0].length; j++) {
+        for (let j = 0; j < sol_len; j++) {
             if (check_graph_level(graph[j], seq[j]))
-                graph[j].push([seq[j][0], [seq[j][1]]]);
+                graph[j].push({
+                    puzzle: seq[j].puzzle,
+                    moves: [seq[j].move]
+                });
         }
     })
     return graph;
@@ -41,22 +45,24 @@ function link_graph(graph) {
             // Variable that contains the links between one node and the nodes of the next layer
             let links = []
             // For each move that we can make from that node (puzzle)
-            node[1].forEach((move) => {
-                // Add a link between the current node and the node on the next layer. This node, has
-                // the puzzle that corresponds to the current one after we make the move.
-                // We are pushing an array of this format: [pos (int), move (string)], where pos
-                // represent the position of the node on the next layer
-                links.push(
-                    [
+            node.moves.forEach((move) => {
+                /*
+                    Add a link between the current node and the node on the next layer. This node has
+                    the puzzle that corresponds to the current one after we make the move.
+                 */
+                links.push({
+                    node_indx:
                         (
                             // Finds the node on the next layer
                             (g_l, state) => {
                                 for (let j = 0; j < g_l.length; j++) {
-                                    if (equals(g_l[j][0], state))
+                                    if (equals(g_l[j].puzzle, state))
                                         return j;
                                 }
-                            })(graph[i + 1], make_mave(node[0], move)
+                            })(
+                            graph[i + 1], make_move(node.puzzle, move)
                         ),
+                    type:
                         // Translates the move for visualization purposes
                         (
                             (m) => {
@@ -72,10 +78,10 @@ function link_graph(graph) {
                                 }
                             }
                         )(move)
-                    ]
-                )
-            })
-            node[1] = links
+                    }
+                );
+            });
+            node.moves = links;
         })
     }
 }
@@ -85,7 +91,7 @@ function extract_graph_data(graph) {
     let nodeDataArray = [];
     let linkDataArray = [];
 
-    let i = 1
+    let i = 1;
     // Look into each level of the graph
     graph.forEach((level) => {
         let l = level.length;   // # of nodes inside the level
@@ -97,7 +103,7 @@ function extract_graph_data(graph) {
                 key: i,
                 text: i.toString()
             });
-            node[1].forEach((move) => {
+            node.moves.forEach((move) => {
                 /*
                     Associate to each link the key of the current node and
                     the key of the node specified inside the move array.
@@ -106,14 +112,14 @@ function extract_graph_data(graph) {
                  */
                 linkDataArray.push({
                     from: i,
-                    to: b + l + move[0],
-                    text: move[1]
-                })
+                    to: b + l + move.node_indx,
+                    text: move.type
+                });
             })
             i++;
         })
     })
-    return [nodeDataArray, linkDataArray];
+    return {nodes: nodeDataArray, links: linkDataArray};
 }
 
 // Returns a layered graph
@@ -125,15 +131,16 @@ function get_graph(puzzle, sols) {
     })
 
     // Initiate layered graph
-    let graph = initiate_graph(sequences)
+    let graph = initiate_graph(sequences);
+
     // Link nodes in each layer
-    link_graph(graph)
+    link_graph(graph);
 
     return graph;
 }
 
-function get_graph_data(puzzle, sols) {
+function get_graph_data(puzzle_data) {
     return extract_graph_data(
-        get_graph(puzzle, sols)
+        get_graph(puzzle_data.puzzle, puzzle_data.move_seq)
     );
 }
