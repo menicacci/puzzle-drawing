@@ -41,7 +41,7 @@ function generateDigraph(i) {
 
 // Set nodes and links for the diagram
 function generateData(i) {
-    let data = get_graph_data(dataset[i]);
+    let data = generateGraphData(dataset[i]);
     myDiagram.model.nodeDataArray = data.nodes;
     myDiagram.model.linkDataArray = data.links;
 }

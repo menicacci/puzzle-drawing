@@ -1,6 +1,6 @@
 
 // Makes a move on a puzzle
-function make_move(puzzle, move) {
+function makeMove(puzzle, move) {
     let zero_index = puzzle.findIndex((n) => n == 0);
     let new_puzzle = [...puzzle];
     new_puzzle[zero_index] = new_puzzle[zero_index + move];
@@ -10,7 +10,7 @@ function make_move(puzzle, move) {
 }
 
 // Generates an array containing the solution path for a puzzle
-function get_sol_sequence(puzzle, sol) {
+function getSolSequence(puzzle, sol) {
     let sequence = [];
     let state = puzzle;
     for (let i = 0; i < sol.length; i++) {
@@ -18,7 +18,7 @@ function get_sol_sequence(puzzle, sol) {
             puzzle: state,
             move: sol[i]
         });
-        state = make_move(state, sol[i]);
+        state = makeMove(state, sol[i]);
     }
     return sequence;
 }
