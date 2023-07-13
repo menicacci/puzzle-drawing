@@ -1,4 +1,3 @@
-
 // Makes a move on a puzzle
 function makeMove(puzzle, move) {
     let zero_index = puzzle.findIndex((n) => n == 0);

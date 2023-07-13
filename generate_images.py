@@ -27,12 +27,12 @@ def generate_image(puzzle, output_path):
 
         # Disegna il rettangolo della cella
         draw.rectangle([(x1, y1), (x2, y2)], outline='black')
-
-        # Scrivi il numero all'interno della cella
-        text_width, text_height = draw.textsize(str(num), font=font)
-        text_x = x1 + (cell_size - text_width) // 2
-        text_y = y1 + (cell_size - text_height) // 2
-        draw.text((text_x, text_y), str(num), font=font, fill='black')
+        if num != 0:
+            # Scrivi il numero all'interno della cella
+            text_width, text_height = draw.textsize(str(num), font=font)
+            text_x = x1 + (cell_size - text_width) // 2
+            text_y = y1 + (cell_size - text_height) // 2
+            draw.text((text_x, text_y), str(num), font=font, fill='black')
 
     # Salva l'immagine
     image.save(output_path)

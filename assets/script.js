@@ -11,7 +11,6 @@ function loadData() {
 			});
 	});
 }
-
 // Graphic improve needed
 function initiateNavbar() {
 	let buttonContainer = document.getElementById('buttonContainer');

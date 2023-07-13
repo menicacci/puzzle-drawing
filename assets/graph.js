@@ -1,4 +1,3 @@
-
 /*
     From an array of solution sequences, it generates a layered graph
     containing all solution. On any layer, there cannot be two equal
