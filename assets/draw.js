@@ -46,19 +46,38 @@ function generateData(i) {
     myDiagram.model.linkDataArray = data.links;
 }
 
-// TODO: Adjust parameters
 function layout() {
     myDiagram.startTransaction("change Layout");
     var lay = myDiagram.layout;
     lay.direction = 90;
-    lay.layerSpacing = 25;
+    lay.layerSpacing = 100; // aumenta lo spazio tra i livelli
     lay.columnSpacing = 25;
     lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
     lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
     lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
     lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
     lay.packOption = 7;
-    lay.alignOption = go.LayeredDigraphLayout.AlignAll;
+    lay.alignOption = go.LayeredDigraphLayout.AlignCenter; // allinea lo strato centrale
     lay.spouseSpacing = 30;
-    myDiagram.commitTransaction("change Layout");
+    myDiagram.scale = 1; // imposta lo scale del diagramma a 1
+    myDiagram.isReadOnly = false; // rende il diagramma non editabile
+    myDiagram.commitTransaction("change Layout"); 
+
+    // Impostazione della posizione e della scala del diagramma
+    var bounds = myDiagram.documentBounds;
+    var scaleX = myDiagram.div.clientWidth / bounds.width;
+    var scaleY = myDiagram.div.clientHeight / bounds.height;
+    var scale = Math.min(scaleX, scaleY);
+    scale = 0.2;
+    myDiagram.scale = scale;
+    var x = (myDiagram.div.clientWidth - bounds.width * scale) / 2; // calcola la posizione X per centrare il diagramma
+    var y = (myDiagram.div.clientHeight - bounds.height * scale) / 2; // calcola la posizione Y per centrare il diagramma
+    myDiagram.position = new go.Point(x, y);
+    myDiagram.viewportBounds = new go.Rect(0, 0, bounds.width * scale, bounds.height * scale);
+
+    // Centra il diagramma
+    var diagramBounds = myDiagram.documentBounds;
+    myDiagram.commandHandler.scrollToPart(myDiagram.findPartAt(diagramBounds.center));
+    myDiagram.commandHandler.zoomToFit(diagramBounds);
+    myDiagram.centerRect(diagramBounds);
 }
