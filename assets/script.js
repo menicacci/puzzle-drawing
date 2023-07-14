@@ -13,7 +13,7 @@ function loadData() {
 	});
 }
 
-// TODO: Graphic improve needed
+//Graphic improve needed
 function initiateNavbar(configurations) {
 	console.log(configurations);
 
