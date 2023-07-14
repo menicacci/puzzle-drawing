@@ -1,0 +1,11 @@
+
+#puzzleContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.nav-item.active {
+    border: 2px solid orangered;
+}
+
