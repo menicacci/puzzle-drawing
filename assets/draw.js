@@ -1,3 +1,4 @@
+let imageWindow;
 
 // Diagram set-up
 function init() {
@@ -12,12 +13,17 @@ function init() {
 
     myDiagram.nodeTemplate =
         $(go.Node, "Spot",
-            { locationSpot: go.Spot.Center },
+            {
+                selectionAdorned: false,
+                selectionChanged: onSelectionChanged,
+                locationSpot: go.Spot.Center,
+            },
             $(go.Shape, "Rectangle",
                 {
-                    fill: "lightgray",
+                    name: "icon",
+                    fill: "lightsteelblue",
                     stroke: null,
-                    desiredSize: new go.Size(30, 30)
+                    desiredSize: new go.Size(50, 50)
                 },
                 new go.Binding("fill", "fill")),
             $(go.TextBlock,
@@ -47,37 +53,85 @@ function generateData(i) {
 }
 
 function layout() {
+    // Layout configuration
     myDiagram.startTransaction("change Layout");
     var lay = myDiagram.layout;
     lay.direction = 90;
-    lay.layerSpacing = 100; // aumenta lo spazio tra i livelli
-    lay.columnSpacing = 25;
+    lay.layerSpacing = 100;
+    lay.columnSpacing = 40;
     lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
     lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
     lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
     lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
     lay.packOption = 7;
-    lay.alignOption = go.LayeredDigraphLayout.AlignCenter; // allinea lo strato centrale
+    lay.alignOption = go.LayeredDigraphLayout.AlignCenter;
     lay.spouseSpacing = 30;
-    myDiagram.scale = 1; // imposta lo scale del diagramma a 1
-    myDiagram.isReadOnly = false; // rende il diagramma non editabile
+    myDiagram.scale = 1;
+    myDiagram.isReadOnly = false;
     myDiagram.commitTransaction("change Layout"); 
 
-    // Impostazione della posizione e della scala del diagramma
-    var bounds = myDiagram.documentBounds;
-    var scaleX = myDiagram.div.clientWidth / bounds.width;
-    var scaleY = myDiagram.div.clientHeight / bounds.height;
-    var scale = Math.min(scaleX, scaleY);
-    scale = 0.2;
+    // Setting the position and scale of the diagram
+    let bounds = myDiagram.documentBounds;
+    let scale = 0.2;
     myDiagram.scale = scale;
-    var x = (myDiagram.div.clientWidth - bounds.width * scale) / 2; // calcola la posizione X per centrare il diagramma
-    var y = (myDiagram.div.clientHeight - bounds.height * scale) / 2; // calcola la posizione Y per centrare il diagramma
+    let x = (myDiagram.div.clientWidth - bounds.width * scale) / 2;
+    let y = (myDiagram.div.clientHeight - bounds.height * scale) / 2;
     myDiagram.position = new go.Point(x, y);
     myDiagram.viewportBounds = new go.Rect(0, 0, bounds.width * scale, bounds.height * scale);
 
-    // Centra il diagramma
+    // Center the diagram
     var diagramBounds = myDiagram.documentBounds;
     myDiagram.commandHandler.scrollToPart(myDiagram.findPartAt(diagramBounds.center));
     myDiagram.commandHandler.zoomToFit(diagramBounds);
     myDiagram.centerRect(diagramBounds);
+}
+
+function onSelectionChanged(node) {
+    let icon = node.findObject("icon");
+    if (icon !== null) {
+        if (node.isSelected) {
+            icon.fill = "darkorange";
+            showImageWindow(node, generateImage(node.data.puzzle, 30, 15));
+        }
+        else {
+            icon.fill = "lightsteelblue";
+            hideImageWindow();
+        }
+    }
+}
+
+function showImageWindow(node, imageUrl) {
+    if (!imageWindow) {
+        // Create the image window if it doesn't exist
+        imageWindow = document.createElement("div");
+        imageWindow.id = "imageWindow";
+        imageWindow.style.position = "absolute";
+        imageWindow.style.zIndex = "10";
+
+        imageWindow.appendChild(( () => {
+                let img = document.createElement("img");
+                img.style.maxWidth = "100%";
+                return img;
+            })()
+        );
+
+        // Append the image window to the document body
+        document.body.appendChild(imageWindow);
+    }
+    // Update the image URL and show the image window
+    let imageElement = imageWindow.querySelector("img");
+    imageElement.src = imageUrl;
+    imageWindow.style.display = "block";
+
+    // Position the image window relative to the node's element
+    let diagramPosition = myDiagram.transformDocToView(node.position);
+    imageWindow.style.top = (diagramPosition.y + node.actualBounds.height) + "px";
+    imageWindow.style.left = (diagramPosition.x + node.actualBounds.width) + "px";
+}
+
+
+function hideImageWindow() {
+    if (imageWindow) {
+        imageWindow.style.display = "none";
+    }
 }

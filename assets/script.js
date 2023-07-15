@@ -17,7 +17,7 @@ function loadData() {
 function initiateNavbar(configurations) {
 	console.log(configurations);
 
-	let buttonContainer = document.getElementById('buttonContainer');
+	let buttonContainer = document.getElementById('puzzleContainer');
 	for (let i = 0; i < configurations.length; i++) {
 		let image = new Image();
 		image.classList.add('nav-item', 'nav-link');

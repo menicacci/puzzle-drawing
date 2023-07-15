@@ -52,7 +52,8 @@ function extractGraphData(graph) {
             // Associate to each node a key based on the visiting order
             nodeDataArray.push({
                 key: key_i,
-                text: key_i.toString()
+                text: key_i.toString(),
+                puzzle: node.puzzle
             });
             node.moves.forEach((move) => {
                 /*
@@ -75,7 +76,7 @@ function extractGraphData(graph) {
                         }
                     )(graph[i + 1], makeMove(node.puzzle, move)),
                     // Translates the move for visualization purposes
-                    text: (
+                    move: (
                         (m) => {
                             switch (m) {
                                 case 1:
@@ -98,7 +99,8 @@ function extractGraphData(graph) {
     // Add last node
     nodeDataArray.push({
         key: key_i,
-        text: key_i.toString()
+        text: key_i.toString(),
+        puzzle: graph[graph.length - 1][0].puzzle
     });
 
     return {nodes: nodeDataArray, links: linkDataArray};
