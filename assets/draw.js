@@ -15,7 +15,7 @@ function init() {
         $(go.Node, "Spot",
             {
                 selectionAdorned: false,
-                selectionChanged: onSelectionChanged,
+                selectionChanged: onSelectionChangedNode,
                 locationSpot: go.Spot.Center,
             },
             $(go.Shape, "Rectangle",
@@ -23,18 +23,38 @@ function init() {
                     name: "icon",
                     fill: "lightsteelblue",
                     stroke: null,
-                    desiredSize: new go.Size(50, 50)
+                    desiredSize: new go.Size(140, 140)
                 },
                 new go.Binding("fill", "fill")),
             $(go.TextBlock,
+                {
+                    font: "60px sans-serif",
+                    textAlign: "center"
+                },
                 new go.Binding("text", "text"))
         );
 
     myDiagram.linkTemplate =
         $(go.Link,
-            { selectable: false },
+            {
+                selectionChanged: onSelectionChangedLink,
+                selectionAdornmentTemplate:
+                    $(go.Adornment,
+                        $(go.Shape,
+                            { isPanelMain: true, stroke: "dodgerblue", strokeWidth: 15 }),
+                        $(go.Shape,
+                            { toArrow: "Standard", fill: "dodgerblue", stroke: null, scale: 1 })
+                    ),
+                routing: go.Link.Normal,
+                curve: go.Link.Bezier,
+                toShortLength: 2
+            },
             $(go.Shape,
-                { strokeWidth: 3, stroke: "#333" }));
+                { name: "OBJSHAPE", strokeWidth: 15, stroke: "#3B444B" }),
+            $(go.Shape,
+                { name: "ARWSHAPE", toArrow: "Standard" }),
+
+        );
 }
 
 // Draw the diagram
@@ -57,15 +77,15 @@ function layout() {
     myDiagram.startTransaction("change Layout");
     var lay = myDiagram.layout;
     lay.direction = 90;
-    lay.layerSpacing = 100;
-    lay.columnSpacing = 40;
+    lay.layerSpacing = 250;
+    lay.columnSpacing = 100;
     lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
     lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
     lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
     lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
     lay.packOption = 7;
     lay.alignOption = go.LayeredDigraphLayout.AlignCenter;
-    lay.spouseSpacing = 30;
+    lay.spouseSpacing = 80;
     myDiagram.scale = 1;
     myDiagram.isReadOnly = false;
     myDiagram.commitTransaction("change Layout"); 
@@ -86,7 +106,7 @@ function layout() {
     myDiagram.centerRect(diagramBounds);
 }
 
-function onSelectionChanged(node) {
+function onSelectionChangedNode(node) {
     let icon = node.findObject("icon");
     if (icon !== null) {
         if (node.isSelected) {
@@ -95,6 +115,20 @@ function onSelectionChanged(node) {
         }
         else {
             icon.fill = "lightsteelblue";
+            hideImageWindow();
+        }
+    }
+}
+
+function onSelectionChangedLink(link) {
+    let node = myDiagram.findNodeForKey(link.data.from);
+    let icon = node.findObject("icon");
+
+    if (icon !== null) {
+        if (link.isSelected) {
+            showImageWindow(node, generateImage(node.data.puzzle, 30, 15, link.data.move));
+        }
+        else {
             hideImageWindow();
         }
     }

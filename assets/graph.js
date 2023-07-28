@@ -76,20 +76,7 @@ function extractGraphData(graph) {
                         }
                     )(graph[i + 1], makeMove(node.puzzle, move)),
                     // Translates the move for visualization purposes
-                    move: (
-                        (m) => {
-                            switch (m) {
-                                case 1:
-                                    return 'R';
-                                case -1:
-                                    return 'L';
-                                case 4:
-                                    return 'D';
-                                case -4:
-                                    return 'U';
-                            }
-                        }
-                    )(move)
+                    move: move
                 });
             });
             key_i++;

@@ -1,6 +1,6 @@
 // Makes a move on a puzzle
 function makeMove(puzzle, move) {
-    let zero_index = puzzle.findIndex((n) => n == 0);
+    let zero_index = findZero(puzzle);
     let new_puzzle = [...puzzle];
     new_puzzle[zero_index] = new_puzzle[zero_index + move];
     new_puzzle[zero_index + move] = 0;
@@ -20,6 +20,11 @@ function getSolSequence(puzzle, sol) {
         state = makeMove(state, sol[i]);
     }
     return sequence;
+}
+
+// Find the index of the empty square (0) in the puzzle
+function findZero(puzzle) {
+    return puzzle.indexOf(0);
 }
 
 // Checks if two puzzle are equals
